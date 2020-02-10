@@ -2,9 +2,9 @@
  Nastran inpurt file translator for stressRefine
 Windows Visual Studio version
 that was last modified using
-VS2013. That and any newer version should work to compile them.
-They are all in C++ except the User interface, srui, which is in C#.
-Go in a folder and doubleclick on the ".sln" file to open the project.
+VS2013. That and any newer version should work to compile this project.
+It is in C++
+Doubleclick on the ".sln" file to open the project.
 If using a newer version than 2013, you may get a message about updating to the latest
 VS version,
 to which you should say yes.

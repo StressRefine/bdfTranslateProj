@@ -2,7 +2,8 @@
  Nastran inpurt file translator for stressRefine
  
 Updated Version will compile on linux or windows
-linux Version: download source, go into folder linuxDebug or linuxRelease and make all their, executable will reside their
+linux Version: download source, go into folder linuxDebug or linuxRelease and make all there, executable will reside there
+note that both the makefile and all ".mk" files are needed because the makefile references them
 
 Windows Visual Studio version
 that was last modified using

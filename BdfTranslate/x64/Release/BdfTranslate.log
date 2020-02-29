@@ -1,0 +1,50 @@
+﻿Build started 2/10/2020 4:07:43 PM.
+     1>Project "C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\BdfTranslate\BdfTranslate.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W2 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\BdfTranslate.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W2 /WX- /sdl /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\BdfTranslate.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt BdfTranslate.cpp SRbdf.cpp SRconstraint.cpp SRcoord.cpp SRelemBrickWedge.cpp SRelement.cpp SRfile.cpp SRforce.cpp SRinput.cpp SRmachDep.cpp SRmaterial.cpp SRmath.cpp SRmodel.cpp SRnode.cpp SRoutput.cpp SRstring.cpp SRutil.cpp
+         BdfTranslate.cpp
+         SRbdf.cpp
+         SRconstraint.cpp
+         SRcoord.cpp
+         SRelemBrickWedge.cpp
+         SRelement.cpp
+         SRfile.cpp
+         SRforce.cpp
+         SRinput.cpp
+         SRmachDep.cpp
+         SRmaterial.cpp
+         SRmath.cpp
+         SRmodel.cpp
+         SRnode.cpp
+         SRoutput.cpp
+         SRstring.cpp
+         SRutil.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\x64\Release\BdfTranslate.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\x64\Release\BdfTranslate.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\x64\Release\BdfTranslate.lib" /MACHINE:X64 x64\Release\BdfTranslate.obj
+         x64\Release\SRbdf.obj
+         x64\Release\SRconstraint.obj
+         x64\Release\SRcoord.obj
+         x64\Release\SRelemBrickWedge.obj
+         x64\Release\SRelement.obj
+         x64\Release\SRfile.obj
+         x64\Release\SRforce.obj
+         x64\Release\SRinput.obj
+         x64\Release\SRmachDep.obj
+         x64\Release\SRmaterial.obj
+         x64\Release\SRmath.obj
+         x64\Release\SRmodel.obj
+         x64\Release\SRnode.obj
+         x64\Release\SRoutput.obj
+         x64\Release\SRstring.obj
+         x64\Release\SRutil.obj
+         x64\Release\stdafx.obj
+         Generating code
+         Finished generating code
+         BdfTranslate.vcxproj -> C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\x64\Release\BdfTranslate.exe
+     1>Done Building Project "C:\Users\rich\Documents\GitHub\_SROS\BdfTranslateProj\bdfTranslateProj\BdfTranslate\BdfTranslate.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:04.45

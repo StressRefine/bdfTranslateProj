@@ -35,14 +35,9 @@ using namespace std;
 #define ALLOCATEMEMORY new
 #define DELETEMEMORY delete
 
-#define SRASSERT(expn) SRutil::SRAssert(__FILE__,__LINE__,(expn))
-
 class SRutil  
 {
-public:
-	static void TimeStamp(bool debugOnly=false);
-	static void SRutil::TimeStampToScreen();
-	static void SRAssert(char* file, int line, bool expn);
+
 	SRutil(){};
 	~SRutil(){};
 };
@@ -70,7 +65,6 @@ public:
 			Free();
 		num = nt;
 		d = ALLOCATEMEMORY int[num];
-		SRASSERT(d != NULL);
 		Zero();
 	};
 	void PushBack(int v);
@@ -101,19 +95,19 @@ public:
 		for(int i = 0; i < len; i++)
 			d[i] = v2.d[i];
 	};
-	int* GetVector(){ SRASSERT(d != NULL); return d; };
+	int* GetVector(){ return d; };
 #ifdef _DEBUG
-	inline int Get(int i){ SRASSERT(i >= 0 && i < num); return d[i]; };
+	inline int Get(int i){ return d[i]; };
 #else
 	inline int Get(int i){ return d[i];};
 #endif
 #ifdef _DEBUG
-	inline void Put(int i, int di){ SRASSERT(i >= 0 && i < num); d[i] = di; };
+	inline void Put(int i, int di){ d[i] = di; };
 #else
 	inline void Put(int i,int di){ d[i] = di; };
 #endif
 #ifdef _DEBUG
-	inline void PlusAssign(int i, int di){ SRASSERT(i >= 0 && i < num); d[i] += di; };
+	inline void PlusAssign(int i, int di){ d[i] += di; };
 #else
 	inline void PlusAssign(int i, int di){ d[i] += di; };
 #endif
@@ -154,7 +148,6 @@ public:
 			Free();
 		num = nt;
 		d = ALLOCATEMEMORY double[num];
-		SRASSERT(d != NULL);
 		Zero();
 	};
 	void Zero(int nt = 0)
@@ -180,21 +173,9 @@ public:
 			d[i] = v2[i];
 	};
 	double* GetVector(){ return d; };
-#ifdef _DEBUG
-	inline double Get(int i){ SRASSERT(i >= 0 && i < num); return d[i]; };
-#else
 	inline double Get(int i){ return d[i]; };
-#endif
-#ifdef _DEBUG
-	inline void Put(int i, double di){ SRASSERT(i >= 0 && i < num); d[i] = di; };
-#else
 	inline void Put(int i, double di){ d[i] = di; };
-#endif
-#ifdef _DEBUG
-	inline void PlusAssign(int i, double di){ SRASSERT(i >= 0 && i < num); d[i] += di; };
-#else
 	inline void PlusAssign(int i, double di){ d[i] += di; };
-#endif
 	double operator [] (int i) { return Get(i); };
 
 	SRdoubleVector(int nt){ Allocate(nt); };
@@ -221,29 +202,10 @@ public:
 	};
 	int GetNum(){ return d.size(); };
 	inline gen* GetVector(){ return &d[0]; };
-#ifdef _DEBUG
-	inline gen *GetPointer(int i){ SRASSERT(i >= 0 && i < d.size()); return &d[i]; };
-#else
 	inline gen *GetPointer(int i){ return &d[i]; };
-#endif
-#ifdef _DEBUG
-	gen& Get(int i){ SRASSERT(i >= 0 && i < d.size()); return d[i]; };
-#else
 	gen& Get(int i){ return d[i]; };
-#endif
-#ifdef _DEBUG
-	inline void Put(int i, gen &di){
-		SRASSERT(i >= 0 && i< d.size());
-		d[i] = di;
-	};
-#else
 	inline void Put(int i, gen &di){ d[i] = di; };
-#endif
-#ifdef _DEBUG
-	inline void PlusAssign(int i, gen &di){ SRASSERT(i >= 0 && i<num); d[i] += di; };
-#else
 	inline void PlusAssign(int i, gen &di){ d[i] += di; };
-#endif
 	void pushBack(gen dt){ d.push_back(dt); };
 	gen operator [] (int i) { return Get(i); };
 	SRvector(int nt){ d.resize(0); Allocate(nt); };
@@ -297,14 +259,13 @@ public:
 	int GetLength(){ return d.size(); };
 	gen* Add()
 	{
-		SRASSERT(num < d.size());
 		if (d[num] == NULL)
 			d[num] = ALLOCATEMEMORY gen();
 		num++;
 		return d[num - 1];
 	};
 #ifdef _DEBUG
-	inline gen *GetPointer(int i){ SRASSERT(i >= 0 && i < num); return d[i]; };
+	inline gen *GetPointer(int i){ return d[i]; };
 #else
 	inline gen *GetPointer(int i){ return d[i]; };
 #endif
@@ -375,11 +336,9 @@ public:
 		n = nt;
 		m = mt;
 		d = ALLOCATEMEMORY int* [n];
-		SRASSERT(d != NULL);
 		for(int i = 0; i < n; i++)
 		{
 			d[i] = ALLOCATEMEMORY int[m];
-			SRASSERT(d[i] != NULL);
 		}
 		Zero();
 	};
@@ -389,14 +348,14 @@ public:
 			return;
 		for(int i = 0; i < n; i++)
 			DELETEMEMORY d[i];
-		DELETEMEMORY [n] d;
+		DELETEMEMORY [] d;
 		d = NULL;
 		n = m = 0;
 	};
 #ifdef _DEBUG
 	inline int Get(int i,int j)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); return d[i][j];
+		return d[i][j];
 	};
 #else
 	inline int Get(int i, int j){ return d[i][j]; };
@@ -404,7 +363,7 @@ public:
 #ifdef _DEBUG
 	inline void Put(int i,int j, int v)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); d[i][j] = v;
+		d[i][j] = v;
 	};
 #else
 	inline void Put(int i, int j, int v){ d[i][j] = v; };
@@ -412,7 +371,7 @@ public:
 #ifdef _DEBUG
 	inline void PlusAssign(int i, int j, int v)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); d[i][j] += v;
+		d[i][j] += v;
 	};
 #else
 	inline void PlusAssign(int i, int j, int v){ d[i][j] += v; };
@@ -442,11 +401,9 @@ public:
 		n = nt;
 		m = mt;
 		d = ALLOCATEMEMORY double* [n];
-		SRASSERT(d != NULL);
 		for(int i = 0; i < n; i++)
 		{
 			d[i] = ALLOCATEMEMORY double[m];
-			SRASSERT(d[i] != NULL);
 		}
         Zero();
 	};
@@ -456,7 +413,7 @@ public:
 			return;
 		for(int i = 0; i < n; i++)
 			DELETEMEMORY d[i];
-		DELETEMEMORY [n] d;
+		DELETEMEMORY [] d;
 		d = NULL;
 		n = m = 0;
 	};
@@ -482,7 +439,7 @@ public:
 #ifdef _DEBUG
 	inline double Get(int i,int j)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); return d[i][j];
+		return d[i][j];
 	};
 #else
 	inline double Get(int i, int j){ return d[i][j]; };
@@ -490,7 +447,7 @@ public:
 #ifdef _DEBUG
 	inline void Put(int i, int j ,double v)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); d[i][j] = v;
+		d[i][j] = v;
 	};
 #else
 	inline void Put(int i, int j ,double v){ d[i][j] = v; };
@@ -498,7 +455,7 @@ public:
 #ifdef _DEBUG
 	inline void PlusAssign(int i, int j, double v)
 	{
-		SRASSERT(i >= 0 && i < n); SRASSERT(j >= 0 && j < m); d[i][j] += v;
+		d[i][j] += v;
 	};
 #else
 	inline void PlusAssign(int i, int j ,double v){ d[i][j] += v; };
@@ -528,11 +485,9 @@ public:
 		if(d != NULL)
 			Free();
 		d = ALLOCATEMEMORY gen* [n];
-		SRASSERT(d != NULL);
 		for(int i = 0; i < n; i++)
 		{
 			d[i] = ALLOCATEMEMORY gen[m];
-			SRASSERT(d[i] != NULL);
 		}
 	};
 	void Free()
@@ -541,7 +496,7 @@ public:
 			return;
 		for (int i = 0; i < n; i++)
 			DELETEMEMORY d[i];
-		DELETEMEMORY [n] d;
+		DELETEMEMORY [] d;
 		d = NULL;
 		n = m = 0;
 	};

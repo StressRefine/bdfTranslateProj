@@ -23,7 +23,6 @@ also available at <https://www.gnu.org/licenses/>
 
 
 
-#include "stdafx.h"
 #include <stdlib.h>
 #include <search.h>
 #include "SRmodel.h"
@@ -44,8 +43,6 @@ void SRoutput::DoOutput()
 		if (model.GetMaterial(i)->active)
 			model.numactiveMat++;
 	}
-	int nnodes = model.GetNumNodes();
-	int nelem = model.GetNumElements();
 	model.mshFile.PrintLine("EntityCounts From BDF translate");
 	model.mshFile.PrintLine("%d //nodes", model.GetNumNodes());
 	model.mshFile.PrintLine("%d //elements", model.GetNumElements());
@@ -55,7 +52,7 @@ void SRoutput::DoOutput()
 	model.mshFile.PrintLine("0 0 //multi face constraint groups, multi face constraints");
 	model.mshFile.PrintLine("0 //breakout constraints");
 	model.mshFile.PrintLine("0 //nodal breakout constraints");
-	model.mshFile.PrintLine("%d //nodal forces", model.GetNumForces());
+	model.mshFile.PrintLine("%d //forces", model.GetNumForces());
 	model.mshFile.PrintLine("0 0 //multi face force groups, multi face forces");
 	model.mshFile.PrintLine("%d //volume forces", model.volumeForces.GetNum());
 	model.mshFile.PrintLine("%d //nodesWithDisplacements", model.volumeForces.GetNum());
@@ -96,7 +93,7 @@ void SRoutput::OutputElements()
 	for (int i = 0; i <model.elements.GetNum(); i++)
 	{
 		SRelement* elem = model.GetElement(i);
-		model.mshFile.Print(" %d %s ", elem->GetUserid(), elem->matname.str);
+		model.mshFile.Print(" %d %s ", elem->GetUserid(), elem->matname.getStr());
 		for (int n = 0; n < elem->GetNumNodes(); n++)
 		{
 			int id = elem->GetNodeId(n);
@@ -131,7 +128,7 @@ void SRoutput::OutputConstraints()
 		if (con->coordId != -1)
 		{
 			SRcoord* coord = model.GetCoord(con->coordId);
-			model.mshFile.Print(" coord %s", coord->name.str);
+			model.mshFile.Print(" coord %s", coord->name.getStr());
 		}
 
 		model.mshFile.Print("\n");
@@ -282,7 +279,7 @@ void SRoutput::OutputMaterials()
 		SRmaterial* mat = model.materials.GetPointer(i);
 		if (!mat->active)
 			continue;
-		model.mshFile.PrintLine("%s iso", mat->name.str);
+		model.mshFile.PrintLine("%s iso", mat->name.getStr());
 		model.mshFile.PrintLine("%lg %lg %lg %lg //rho alpha tref allowable", mat->rho, mat->alphax, mat->tref, mat->allowableStress);
 		model.mshFile.PrintLine("%lg %lg //E nu", mat->E, mat->nu);
 	}
@@ -311,10 +308,10 @@ void SRoutput::OutputCoordinates()
 		if (coord->type == spherical)
 			typeStr.Copy("spherical");
 		if (coord->gcsaligned)
-			model.mshFile.PrintLine("%s %s", coord->name.str, typeStr.str);
+			model.mshFile.PrintLine("%s %s", coord->name.getStr(), typeStr.getStr());
 		else
-			model.mshFile.PrintLine("%s %s NotGcsAligned", coord->name.str, typeStr.str);
-		model.mshFile.PrintLine(" %lg %lg %lg %", coord->origin.d[0], coord->origin.d[1], coord->origin.d[2]);
+			model.mshFile.PrintLine("%s %s NotGcsAligned", coord->name.getStr(), typeStr.getStr());
+		model.mshFile.PrintLine(" %lg %lg %lg", coord->origin.d[0], coord->origin.d[1], coord->origin.d[2]);
 		if (!coord->gcsaligned)
 		{
 			SRvec3 p1 = coord->origin;

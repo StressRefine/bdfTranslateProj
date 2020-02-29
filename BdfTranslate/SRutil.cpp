@@ -21,37 +21,9 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRmodel.h"
 
 extern SRmodel model;
-
-void SRutil::SRAssert(char *file, int line, bool expn)
-{
-#ifdef _DEBUG
-	if (!expn)
-		SRmodel::ErrorExit(file, line);
-#endif
-}
-
-void SRutil::TimeStamp(bool debugOnly)
-{
-#ifndef _DEBUG
-	if(debugOnly)
-		return;
-#endif
-	SRstring line;
-	SRmachDep::GetTime(line);
-	OUTPRINT(line.str);
-	OUTPRINT();
-}
-
-void SRutil::TimeStampToScreen()
-{
-	SRstring line;
-	SRmachDep::GetTime(line);
-	SCREENPRINT(line.str);
-}
 
 void SRintVector::PushBack(int v)
 {
@@ -63,8 +35,6 @@ void SRintVector::PushBack(int v)
 		d[i] = tmp.d[i];
 	d[num - 1] = v;
 };
-
-
 
 void SRdoubleVector::PushBack(double v)
 {

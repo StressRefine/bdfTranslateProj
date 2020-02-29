@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include <stdlib.h>
 #include "SRmodel.h"
 #include "SRoutput.h"
@@ -120,7 +119,7 @@ void SRmodel::CleanUp(bool partial)
 
 static bool errorExitCalled = false;
 
-void SRmodel::ErrorExit(char *file, int line)
+void SRmodel::ErrorExit(const char *file, int line)
 {
 	//print error messages and shut down
 	//when fatal error occurs
@@ -131,8 +130,9 @@ void SRmodel::ErrorExit(char *file, int line)
 	if (!errorExitCalled)
 	{
 		errorExitCalled = true;
-		SRstring s = file;
-		char *t = s.LastChar('\\');
+		SRstring s;
+		s.Copy(file);
+		const char *t = s.LastChar(slashChar);
 		if (t != NULL)
 		{
 			SCREENPRINT("\nFatal Error\nFile: %s\nLine: %d\n", t + 1, line);

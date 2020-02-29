@@ -59,11 +59,11 @@ class SRmaterial
 public:
 	//functions:
 	void IsoCreate(double et, double nut);
-	char* GetName(){ return name.str; };
+	const char* GetName(){ return name.getStr(); };
 	SRmaterialType GetType(){ return type; };
 	double GetRho(){ return rho; };
 	double MatScale();
-	void SRmaterial::printToFile(SRfile &f);
+	void printToFile(SRfile &f);
 
 	SRmaterial(){ type = iso; E = 0.0; nu = 0.0; rho = 0.0; active = false; };
 	~SRmaterial(){};

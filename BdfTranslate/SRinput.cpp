@@ -23,7 +23,6 @@ also available at <https://www.gnu.org/licenses/>
 
 
 
-#include "stdafx.h"
 #include <stdlib.h>
 #include <search.h>
 #include "SRmodel.h"
@@ -70,13 +69,13 @@ bool SRinput::Translate()
 	//files in case future opens will be for "append":
 	tail = model.fileNameTail;
 	basename = model.outdir;
-	basename += "\\";
+	basename += slashStr;
 	basename += tail;
 	filename = basename;
 
 	if(!model.inpFile.Open(SRinputMode))
 	{
-		char *tmp = filename.LastChar('\\', true);
+		const char *tmp = filename.LastChar(slashChar, true);
 		SCREENPRINT(" bdf file not found: %s", tmp);
 		OUTPRINT(" bdf file not found: %s", tmp);
 		exit(0);
@@ -132,7 +131,6 @@ int SRinput::GetCoordId(SRstring &name)
 		if (name == coord->name)
 			return i;
 	}
-	SRASSERT(false);
 	return -1;
 }
 
@@ -415,7 +413,6 @@ void SRinput::checkLcs(SRconstraint* con, int cid)
 	if (coord->type == cartesian && !con->hasEnforcedDisp())
 	{
 		//check if spc can be converted to equivalent gcs:
-		bool lcscondof[3];
 		int dof;
 		int ncondof = 0;
 		for (dof = 0; dof < 3; dof++)

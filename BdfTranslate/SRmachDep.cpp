@@ -22,26 +22,22 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
-#include <direct.h>
-#include <time.h>
-#include "SRString.h"
+#include "SRstring.h"
 #include "SRmodel.h"
-#ifdef _WINDOWS
-#endif
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #endif
 
-static char buf[256];
-
-bool SRmachDep::CreateDir(char *name)
+bool SRmachDep::CreateDir(const char *name)
 {
 	//create a directory with full path "name"
-	//ttd: verify this is portable to non-windows
+#ifdef linux
+	int i = mkdir(name,0777);
+#else
 	int i = _mkdir(name);
+#endif
 	if (i == 0)
 		return true;
 	else
@@ -49,24 +45,89 @@ bool SRmachDep::CreateDir(char *name)
 	return false;
 }
 
-
-void SRmachDep::GetTime(SRstring &t)
+void SRmachDep::fileOpen(FILE*& fptr, const char* name, const char* mode)
 {
-	//return date and time in a string
-	//note: this should be portable- time and ctime are standard c functions
-	//put it in ifdef if problems on other platforms
-
-	time_t ltime;
-	time( &ltime );
-	char buf[256];
-	ctime_s(buf, 256, &ltime);
-	t = buf;
-#if 0
-	//example:
-	//Fri Apr 29 12:25:12 2001
-	line.Token(); //skip day of week;
-	line.Token(); //skip month;
-	line.Token(); //skip day;
-	t = line.Token();
+#ifdef linux
+	fptr = fopen(name, mode);
+#else
+	fopen_s(&fptr, name, mode);
 #endif
 }
+
+void SRmachDep::stringCopy(char* dest, int destLen, const char* src)
+{
+#ifdef linux
+	strcpy(dest, src);
+#else
+	strcpy_s(dest, destLen, src);
+#endif
+}
+
+void SRmachDep::stringNCopy(char* dest, int destLen, const char* src, int n)
+{
+#ifdef linux
+	strncpy(dest, src, n);
+    //make sure dest is null-terminated:
+	dest[n] = '\0';
+#else
+	strncpy_s(dest, destLen, src, n);
+#endif
+}
+
+void SRmachDep::stringCat(char* dest, int destLen, const char* src)
+{
+#ifdef linux
+	strcat(dest, src);
+#else
+	strcat_s(dest, destLen, src);
+#endif
+}
+
+void SRmachDep::stringNCat(char* dest, int destLen, const char* src, int n)
+{
+#ifdef linux
+	strncat(dest, src, n);
+#else
+	strncat_s(dest, destLen, src, n);
+#endif
+}
+
+char* SRmachDep::stringToken(char* str, char* sep, char** nextToken)
+{
+#ifdef linux
+	return strtok(str, sep);
+#else
+	return strtok_s(str, sep, nextToken);
+#endif
+}
+
+int SRmachDep::stringCmp(const char* str,const char* str2)
+{
+	return strcmp(str, str2);
+}
+
+int SRmachDep::stringICmp(const char* str,const char* str2)
+{
+#ifdef linux
+	return strcasecmp(str, str2);
+#else
+	return _stricmp(str, str2);
+#endif
+}
+
+int SRmachDep::stringNCmp(const char* str,const char* str2, int n)
+{
+	return strncmp(str, str2, n);
+}
+
+int SRmachDep::stringNICmp(const char* str,const char* str2,int n)
+{
+#ifdef linux
+	return strncasecmp(str, str2,n);
+#else
+	return _strnicmp(str, str2,n);
+#endif
+}
+
+
+

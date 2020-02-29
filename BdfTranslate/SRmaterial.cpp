@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRutil.h"
 #include "SRmodel.h"
 
@@ -74,7 +73,7 @@ double SRmaterial::MatScale()
 
 void SRmaterial::printToFile(SRfile &f)
 {
-	f.Print(" %s", name.str);
+	f.Print(" %s", name.getStr());
 	if (type == iso)
 	{
 		f.Print(" isotropic");

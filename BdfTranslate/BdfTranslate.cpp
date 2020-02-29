@@ -19,9 +19,7 @@ also available at <https://www.gnu.org/licenses/>
 // BdfTranslate.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
 #include <stdlib.h>
-#include <direct.h>
 #include <vector>
 #include "SRmodel.h"
 
@@ -32,26 +30,21 @@ SRmodel model;
 
 int main(int argc, char *argv[])
 {
-	_set_output_format(_TWO_DIGIT_EXPONENT);
-
 	SRfile ft;
 	SRfile modelF;
 	SRstring line, nametail, infoldername, outfoldername, inname, outname;
 
-	bool batchMode = false;
-
 	if (argc > 1)
 	{
 		model.wkdir.Copy(argv[1]);
-		batchMode = true;
 	}
 	else
 	{
 		char buf[256];
-		_getcwd(buf, sizeof(buf));
-		SCREENPRINT(" _getcwd: %s", buf);
+		MDGETCWD(buf, sizeof(buf));
+		SCREENPRINT(" _getcwd: %s\n", buf);
 		model.wkdir = buf;
-		model.wkdir += "\\";
+		model.wkdir += slashStr;
 	}
 	line = model.wkdir;
 	line += "xlate_log.txt";
@@ -59,20 +52,20 @@ int main(int argc, char *argv[])
 	model.logFile.Delete();
 	model.logFile.Open(SRoutputMode);
 	model.logFile.PrintLine("bdf translate log");
-	model.logFile.PrintLine("wkdir: %s",model.wkdir.str);
+	model.logFile.PrintLine("wkdir: %s",model.wkdir.getStr());
 	model.logFile.Close();
-	SCREENPRINT("logfile %s\n", line.str);
+	SCREENPRINT("logfile %s\n", line.getStr());
 	line = model.wkdir;
 	line += "translateCmd.txt";
 	if (!modelF.Open(line, SRinputMode))
 	{
-		SCREENPRINT("translateCmd file %s not found\n", line.str);
+		SCREENPRINT("translateCmd file %s not found\n", line.getStr());
 		ERROREXIT;
 	}
 	SRstring bdfFileName;
 	modelF.GetLine(bdfFileName);
-	bdfFileName.Left('\\', infoldername);
-	bdfFileName.Right('\\', line);
+	bdfFileName.Left(slashChar, infoldername);
+	bdfFileName.Right(slashChar, line);
 	line.Left('.', model.fileNameTail);
 	modelF.GetLine(outfoldername);
 	SRstring dispFile;
@@ -85,17 +78,17 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	outfoldername.Right('\\', model.SrFileNameTail);
-	if (!model.inpFile.Existcheck(bdfFileName.str))
+	outfoldername.Right(slashChar, model.SrFileNameTail);
+	if (!model.inpFile.Existcheck(bdfFileName.getStr()))
 	{
 		//try .dat extension:
 		bdfFileName.Left('.', line);
 		bdfFileName.Copy(line);
 		bdfFileName.Cat(".dat");
 	}
-	if (!model.inpFile.Existcheck(bdfFileName.str))
+	if (!model.inpFile.Existcheck(bdfFileName.getStr()))
 	{
-		SCREENPRINT("input file %s not found", bdfFileName.str);
+		SCREENPRINT("input file %s not found", bdfFileName.getStr());
 		ERROREXIT;
 	}
 	model.inpFile.SetFileName(bdfFileName);
@@ -103,43 +96,42 @@ int main(int argc, char *argv[])
 	modelF.Close();
 
 	SRstring bdfdir;
-	bdfFileName.Left('\\', bdfdir);
+	bdfFileName.Left(slashChar, bdfdir);
 	line = model.wkdir;
 	line += "xlate_status.txt";
 	model.statFile.SetFileName(line);
 	model.statFile.Delete();
-	SCREENPRINT("statFile %s\n", line.str);
+	SCREENPRINT("statFile %s\n", line.getStr());
 
 	line = bdfdir;
-	line += "\\";
+	line += slashStr;
 	line += "out.txt";
 	model.outputFile.SetFileName(line);
 	model.outputFile.Delete();
 
 
 	bdfFileName.Copy(outfoldername);
-	SRfile::CreateDir(bdfFileName.str);
+	SRfile::CreateDir(bdfFileName.getStr());
 	model.outdir = bdfFileName;
-	bdfFileName.Cat("\\");
+	bdfFileName.Cat(slashStr);
 	bdfFileName.Cat(model.SrFileNameTail);
 	bdfFileName.Cat(".msh");
 	model.mshFile.SetFileName(bdfFileName);
 	model.mshFile.Delete();
 
 	line = outfoldername;
-	line.Cat("\\");
+	line.Cat(slashStr);
 	line.Cat(model.fileNameTail);
 	line.Cat(".srr");
 	model.srrFile.SetFileName(line);
 
-	SRutil::TimeStampToScreen();
-	SCREENPRINT(" Translating %s\n", model.fileNameTail.str);
-	OUTPRINT(" Translating %s\n", model.fileNameTail.str);
+	SCREENPRINT(" Translating %s\n", model.fileNameTail.getStr());
+	OUTPRINT(" Translating %s\n", model.fileNameTail.getStr());
 	if (!model.input.Translate())
 		exit(0);
 
 	model.statFile.Open(SRoutputMode);
-	model.statFile.PrintLine("translation successful model %s", model.fileNameTail.str);
+	model.statFile.PrintLine("translation successful model %s", model.fileNameTail.getStr());
 	if (model.linearMesh)
 		model.statFile.PrintLine("linear mesh");
 	if (model.anyUnsupportedElement)
@@ -151,16 +143,9 @@ int main(int argc, char *argv[])
 	model.statFile.Close();
 	model.CleanUp();
 
-	SRutil::TimeStampToScreen();
 	SCREENPRINT("SuccessFul Completion\n");
 	OUTPRINT("SuccessFul Completion\n");
 	model.outputFile.Delete();
-
-	if (!batchMode)
-	{
-		SCREENPRINT("hit any char to exit");
-		int c = getchar();
-	}
 
 	return 0;
 }

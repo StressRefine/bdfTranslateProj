@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRmodel.h"
 
 extern SRmodel model;
@@ -38,14 +37,13 @@ void SRelement::Create(SRelementType typet, int useridt, int nnodes, int nodest[
 	uid = useridt;
 	nodeUIds.Allocate(nnodes);
 
-	SRnode* node;
 	for (int i = 0; i < nnodes; i++)
 		nodeUIds.Put(i, nodest[i]);
 }
 
 int SRelement::GetFaceNodes(bool needMidside, int lface, int nv[])
 {
-	int i, ln, nn;
+	int i, ln, nn = 0;
 	if (type == brick)
 	{
 		nn = 4;

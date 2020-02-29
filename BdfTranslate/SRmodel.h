@@ -39,7 +39,7 @@ enum SRstressComponent { xxComponent, yyComponent, zzComponent, xyComponent, xzC
 #include "SRfile.h"
 #include "SRcoord.h"
 #include "SRmaterial.h"
-#include "SRConstraint.h"
+#include "SRconstraint.h"
 #include "SRforce.h"
 #include "SRnode.h"
 #include "SRelement.h"
@@ -58,7 +58,7 @@ class SRmodel
 public:
 	SRmodel();
 
-	static void ErrorExit(char* file, int line);
+	static void ErrorExit(const char* file, int line);
 
 	void CleanUp(bool partial = false);
 
@@ -103,7 +103,7 @@ public:
 	SRthermalForce* GetThermalForce() { return thermalForce; };
 
 	void mapSetup();
-	int SRmodel::GetElementLocalFacesLocalEdgeMidNodeNum(int lface, int lej, SRelementType type);
+	int GetElementLocalFacesLocalEdgeMidNodeNum(int lface, int lej, SRelementType type);
 
 	//"read" routines for private data:
 	double GetSize(){ return size; };

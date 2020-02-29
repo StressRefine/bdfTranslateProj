@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRmodel.h"
 
 #ifdef _DEBUG
@@ -103,7 +102,6 @@ bool SRthermalForce::CeTMult(SRmaterial *mat, double eTx, double eTy, double eTz
 	{
 		double c11 = mat->c11;
 		double lambda = mat->lambda;
-		double G = mat->G;
 		C[0][0] = c11;
 		C[0][1] = lambda;
 		C[0][2] = lambda;

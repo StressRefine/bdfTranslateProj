@@ -27,20 +27,63 @@ also available at <https://www.gnu.org/licenses/>
 
 //MACHINE Dependency flags:
 
-//Windows: ifdef _WINDOWS
-#define SRBUFSIZE 8192 //ttd tune me
-
 enum dlgfilemode{newmode,openmode,saveasmode};
 
-#ifdef _WINDOWS
+#ifdef linux
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <string.h>
+#include <strings.h>
+#define SPRINTF sprintf
+#define SSCANF sscanf
+#define slashStr "/"
+#define slashChar '/'
+#define MDGETCWD getcwd
+#define UNLINK unlink
+#define ACCESS access
+#else
+#include <direct.h>
+//#include <tchar.h>
+#include <stdio.h>
+#include  <io.h>
+#define SPRINTF sprintf_s
+#define SSCANF sscanf_s
+#define UNLINK _unlink
+#define ACCESS _access
+#define slashStr "\\"
+#define slashChar '\\'
+#define MDGETCWD _getcwd
 #endif
+#define FOPEN SRmachDep::fileOpen
+#define STRCPY SRmachDep::stringCopy
+#define STRNCPY SRmachDep::stringNCopy
+#define STRCAT SRmachDep::stringCat
+#define STRNCAT SRmachDep::stringNCat
+#define STRTOK SRmachDep::stringToken
+#define STRCMP SRmachDep::stringCmp
+#define STRNCMP SRmachDep::stringNCmp
+#define STRNICMP SRmachDep::stringNCmp
+#define STRICMP SRmachDep::stringICmp
 
 class SRstring;
-class SRmachDep  
+class SRmachDep
 {
 public:
-	static void GetTime(SRstring &t);
-	static bool CreateDir(char* name);
+	static bool CreateDir(const char* name);
+	static void fileOpen(FILE*& fptr, const char* name, const char* mode);
+	static void stringCopy(char* dest, int destLen,const char* src);
+	static void stringNCopy(char* dest, int destLen,const char* src, int n);
+	static void stringCat(char* dest, int destLen,const char* src);
+	static void stringNCat(char* dest, int destLen,const char* src, int n);
+	static char* stringToken(char* str, char* sep, char** nextToken);
+	static int stringCmp(const char* str,const char* str2);
+	static int stringICmp(const char* str,const char* str2);
+	static int stringNCmp(const char* str,const char* str2, int n);
+	static int stringNICmp(const char* str,const char* str2, int n);
 };
+
+
 
 #endif // !defined(SRMACHDEP_INCLUDED)

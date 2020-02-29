@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRmodel.h"
 
 #ifdef _DEBUG

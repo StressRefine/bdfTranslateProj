@@ -41,7 +41,7 @@ public:
 	void Copy(SRcoord& c2);
 	void operator =(SRcoord& c2){ Copy(c2); };
 	SRcoordType GetType(){ return type; };
-	char* GetName(){ return name.str; };
+	const char* GetName(){ return name.getStr(); };
 	int checkParallelToGcs(int dof);
 	void PrintToFile(SRfile& f);
 

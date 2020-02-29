@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include <search.h>
 #include "SRmodel.h"
 #include <chrono>
@@ -51,8 +50,6 @@ bool SRinput::BdfInput()
 	int nforce = 0, nvol = 0, ntherm = 0, ncon = 0, nspcd = 0, numunsup = 0;
 	SRstring tok;
 	SRstring filename, line, basename, tail;
-
-	auto start = std::chrono::system_clock::now();
 
 	TopToBulk();
 
@@ -194,13 +191,6 @@ bool SRinput::BdfInput()
 		nline++;
 	}
 
-	auto end = std::chrono::system_clock::now();
-
-	std::chrono::duration<double> elapsed_seconds = end - start;
-
-	SCREENPRINT(" read bdf file. elasped seconds: %lg\n", elapsed_seconds);
-
-
 	int numNodeDispsRead = 0;
 	if (model.cropModelWithDispNodes)
 	{
@@ -217,7 +207,7 @@ bool SRinput::BdfInput()
 		model.nodeDispFile.Open(SRinputMode);
 		model.nodeDispFile.GetLine(line); //skip header
 		int uid;
-		char comma = ',';
+		line.setTokSep(',');
 		SRstring linesav;
 
 		while (1)
@@ -225,7 +215,7 @@ bool SRinput::BdfInput()
 			if (!model.nodeDispFile.GetLine(line))
 				break;
 			linesav = line;
-			if (!line.TokRead(uid, &comma))
+			if (!line.TokRead(uid))
 				break;
 			int nid = model.input.NodeFind(uid);
 			if (nid == -1 || nid > nnode)
@@ -233,7 +223,7 @@ bool SRinput::BdfInput()
 				//possibly a node on unsupported entity e.g. shell, just skip it:
 				continue;
 			}
-			model.srrFile.PrintLine(linesav.str);
+			model.srrFile.PrintLine(linesav.getStr());
 			SRnode* node = model.GetNode(nid);
 			node->hasDisp = true;
 			numNodeDispsRead++;
@@ -297,16 +287,6 @@ bool SRinput::BdfInput()
 	finishConstraints();
 
 	model.inpFile.Close();
-
-	auto end2 = std::chrono::system_clock::now();
-
-	std::chrono::duration<double> elapsed_seconds2 = end2 - start;
-	SCREENPRINT("total elapsed sec: %lg\n", elapsed_seconds2);
-
-
-	//ttd 111719. uncomment this is encounter any beams or shells touching solids that don't have bsurfs, e.g. user created by
-	//hand and there are dupes.
-	//checkUnsupportedTouchesNonOrphan();
 
 	return true;
 }
@@ -379,7 +359,7 @@ void SRinput::InputNode(SRstring& line)
 	line.BdfRead(y);
 	line.BdfRead(z);
 	line.BdfRead(dispCoorduid);
-	condofs = line.BdfToken();
+	condofs = line.BdfToken(false);
 	if (coordid > 0)
 	{
 		if (anyCoordsReferenceGrids)
@@ -398,10 +378,10 @@ void SRinput::InputNode(SRstring& line)
 			z = pos.d[2];
 		}
 	}
-	if (condofs.len > 0 && !condofs.isBlank())
+	if (condofs.getLength() > 0 && !condofs.isBlank())
 	{
 		SRconstraint* con = model.constraints.Add();
-		for (int i = 0; i < condofs.len; i++)
+		for (int i = 0; i < condofs.getLength(); i++)
 		{
 			char c = condofs.GetChar(i);
 			if (c == '1')
@@ -432,12 +412,11 @@ void SRinput::InputElement(SRstring& line, int& numFaces)
 	// CHEXA, CPENTA, or CTETRA followed by
 	//eid, pid, g1,..,gn where n is 8 or 20 for hex, 6 or 15 for wedge (CPENTA), 4 or 10 for tet
 	SRstring tok;
-	int nnodes;
+	int nnodes = 0;
 	int id = model.elements.GetNum();
-	int elnum = model.elements.GetNum();
 	SRelement* elem = model.elements.Add();
 	SRstring lineSav = line;
-	tok = line.BdfToken();
+	tok = line.BdfToken(false);
 	if (tok == "CHEXA")
 	{
 		if (model.linearMesh)
@@ -508,6 +487,8 @@ void SRinput::InputElement(SRstring& line, int& numFaces)
 	}
 
 	id = ElpropFind(pid);
+	if(id == -1)
+		ERROREXIT;
 	SRElProperty* elp = model.elProps.GetPointer(id);
 	int mid = elp->matid;
 	SRmaterial* mat = model.materials.GetPointer(mid);
@@ -532,7 +513,7 @@ void SRinput::InputElementProperty(SRstring& line)
 
 	//skip PSOLID:
 	line.BdfToken();
-	int puid, muid, mid;
+	int puid, muid;
 	line.BdfRead(puid);
 	int pid = model.elProps.GetNum();
 	if (pid == 0)
@@ -594,9 +575,9 @@ void SRinput::InputMaterial(SRstring& line, bool matNameWasRead, SRstring& matna
 	}
 	char buf[100];
 	if (matNameWasRead)
-		sprintf_s(buf, "%d:%s", mid + 1, matname.str);
+		SPRINTF(buf, "%d:%s", mid + 1, matname.getStr());
 	else
-		sprintf_s(buf, "MATERIAL%d", mid);
+		SPRINTF(buf, "MATERIAL%d", mid);
 	mat->name.Copy(buf);
 	mat->type = iso;
 	mat->E = E;
@@ -649,7 +630,6 @@ void SRinput::InputForce(SRstring& line)
 	int lsid, gid, cuid;
 	double mag, magIn;
 	SRvec3 f;
-	int gout[8];
 	if (line.CompareUseLength("FORCE1"))
 	{
 		line.BdfToken(); //skip FORCE1
@@ -659,7 +639,6 @@ void SRinput::InputForce(SRstring& line)
 		int guid1, guid2;
 		line.BdfRead(guid1);
 		line.BdfRead(guid2);
-		int fnum = model.forces.GetNum();
 		force = model.forces.Add();
 		force->type = nodalForce;
 		force->entityId = gid;
@@ -699,10 +678,11 @@ void SRinput::InputForce(SRstring& line)
 	{
 		SRstring linesav = line;
 		//check linesav for "thru", only applies to shells, not relevant to solid model:
-		char *s = linesav.LastChar('T');
+		const char *s = linesav.LastChar('T');
 		if (s != NULL)
 		{
-			SRstring tmp = s;
+			SRstring tmp;
+			tmp.Copy(s);
 			if (tmp.CompareUseLength("THRU"))
 				return;
 		}
@@ -728,7 +708,6 @@ void SRinput::InputForce(SRstring& line)
 
 		SRvec3 n;
 		bool pressure = true;
-		int ncorner;
 		if (line.BdfRead(n.d[0]))
 		{
 			pressure = false;
@@ -915,9 +894,8 @@ void SRinput::InputCoordinate(SRstring& line)
 	coord->e3.Cross(p13, coord->e2);
 	coord->e2.Normalize();
 	coord->e2.Cross(coord->e3, coord->e1);
-	double d = coord->e1.Length();
 	char buf[100];
-	sprintf_s(buf, "LCS%d", id);
+	SPRINTF(buf, "LCS%d", id);
 	coord->name.Copy(buf);
 	SRvec3 e1g, e3g;
 	e1g.Assign(1.0, 0.0, 0.0);
@@ -943,7 +921,6 @@ void SRinput::InputConstraint(SRstring& line)
 	SRstring condofs;
 	int setid, gid;
 	double enfd;
-	int cid = model.GetNumConstraints();
 
 	if (line.CompareUseLength("SPC1"))
 	{
@@ -952,11 +929,11 @@ void SRinput::InputConstraint(SRstring& line)
 		line.BdfRead(setid);
 		while (1)
 		{
-			char* buf = line.BdfToken();
+			const char* buf = line.BdfToken(false);
 			if (buf == NULL)
 				break;
 			condofs = buf;
-			for (int i = 0; i < condofs.len; i++)
+			for (int i = 0; i < condofs.getLength(); i++)
 			{
 				char c = condofs.GetChar(i);
 				if (c == '1')
@@ -984,8 +961,8 @@ void SRinput::InputConstraint(SRstring& line)
 			SRconstraint* con = model.constraints.Add();
 			con->entityId = gid;
 			con->uid = gid;
-			condofs = line.BdfToken();
-			for (int i = 0; i < condofs.len; i++)
+			condofs = line.BdfToken(false);
+			for (int i = 0; i < condofs.getLength(); i++)
 			{
 				char c = condofs.GetChar(i);
 				if (c == '1')
@@ -1018,12 +995,12 @@ void SRinput::InputEnfd(SRstring& line)
 	line.BdfToken();//skip SPC
 	line.BdfRead(setid);
 	line.BdfRead(gid);
-	condofs = line.BdfToken();//condofs
+	condofs = line.BdfToken(false);//condofs
 	line.BdfRead(enfdval);
 	SRenfd* enfd = model.enfds.Add();
 	enfd->nuid = gid;
 	enfd->enfdVal = enfdval;
-	for (int i = 0; i < condofs.len; i++)
+	for (int i = 0; i < condofs.getLength(); i++)
 	{
 		char c = condofs.GetChar(i);
 		if (c == '1')
@@ -1046,9 +1023,8 @@ void SRinput::inputUnsupported(SRstring &line)
 	SRstring lineSav = line;
 	int nnodes = 0;
 	int eid, pid, cid, gid[100000];//this is really high because # of nodes in mpcs/bsurfs is arbitrary
-	double coeff;
 	SRstring tok;
-	tok = line.BdfToken();
+	tok = line.BdfToken(false);
 	int dof;
 	SRunsup *unsup = model.unsups.Add();
 	if (tok.CompareUseLength("CELAS1"))
@@ -1157,7 +1133,7 @@ void SRinput::inputUnsupported(SRstring &line)
 		for (int i = 0; i < 9; i++)
 		{
 			line.BdfToken();
-			if (line.BdfToken() == NULL)
+			if (line.BdfToken(false) == NULL)
 			{
 				done = true;
 				break;
@@ -1175,7 +1151,7 @@ void SRinput::inputUnsupported(SRstring &line)
 				//skip 6 fields:
 				for (int i = 0; i < 6; i++)
 				{
-					if (line.BdfToken() == NULL)
+					if (line.BdfToken(false) == NULL)
 					{
 						done = true;
 						break;
@@ -1211,7 +1187,7 @@ void SRinput::inputUnsupported(SRstring &line)
 		nnodes = 1;
 		while (1)
 		{
-			char* tmp = line.BdfToken();
+			const char* tmp = line.BdfToken(false);
 			if (tmp == NULL)
 				break;
 			tok = tmp;
@@ -1615,7 +1591,7 @@ void SRinput::finishUnsup()
 						break;
 				}
 				else
-					ERROREXIT;//ttd! warning error parsing bsurf
+					ERROREXIT;
 			}
 		}
 		else

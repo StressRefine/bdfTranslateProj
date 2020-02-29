@@ -21,7 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
 #include "SRmodel.h"
 
 #ifdef _DEBUG
@@ -268,14 +267,13 @@ int SRcoord::checkParallelToGcs(int dof)
 
 void SRcoord::PrintToFile(SRfile& f)
 {
-	bool gcs = false;
 	SRvec3 p1, p3;
 	p1.Copy(origin);
 	p1.PlusAssign(e1);
 	p3.Copy(origin);
 	p3.PlusAssign(e3);
 
-	f.Print("%s", name.str);
+	f.Print("%s", name.getStr());
 	if (type == cartesian)
 		f.Print(" cartesian");
 	else if (type == spherical)

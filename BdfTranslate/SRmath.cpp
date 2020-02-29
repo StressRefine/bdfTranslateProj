@@ -21,8 +21,6 @@ also available at <https://www.gnu.org/licenses/>
 //
 //////////////////////////////////////////////////////////////////////
 
-//ttd: blas, etc??
-#include "stdafx.h"
 #include "SRmodel.h"
 
 extern SRmodel model;
